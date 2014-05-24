@@ -2,3 +2,5 @@ gitsync is a Bash script for maintaining sets of git repositories on
 multiple devices.  An example use case would be keeping a work
 computer and home computer syncronized via an external hard drive, USB
 thumb drive, etc.
+
+gitsync is in the public domain, use it for whatever.

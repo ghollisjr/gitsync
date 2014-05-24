@@ -1,0 +1,41 @@
+#!/bin/bash
+# pulls from $1 into $2
+function gitpull {
+    olddir=$(pwd -P)
+    if [[ -d $1 && -d $2 ]] ; then
+        cd $2 &&
+        git pull $1 master
+        cd $olddir
+    fi
+}
+
+function gsync {
+    mount $1/
+    if [[ -f $1/.gitsync ]] ; then
+        syncs=($(cat $1/.gitsync))
+        for((i=0; i<(${#syncs[@]}-1); i=i+2)); do
+            gitpull ${syncs[i]} ${syncs[i+1]}
+            gitpull ${syncs[i+1]} ${syncs[i]}
+        done
+    else
+        echo "Error: $1/.gitsync does not exist."
+        echo ""
+        echo "$1/.gitsync must contain sync path information"
+        echo "in the form of lines, each line containing two paths"
+        echo "which must be syncronized"
+    fi
+}
+
+if [[ $# -eq 0 ]] ; then
+    echo "Usage: gitsync <path1> <path2> ..."
+    echo ""
+    echo "gitsync syncronizes multiple sets of git repositories.  An"
+    echo "example use would be keeping multiple projects on a thumb"
+    echo "and on multiple computers.  To use gitsync, place a file"
+    echo ".gitsync just inside each path which contains two paths per"
+    echo "line which are to be syncronized."
+else
+    for i in $@; do
+        gsync $i
+    done;
+fi

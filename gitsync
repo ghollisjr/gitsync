@@ -14,7 +14,7 @@ function gsync {
     if [[ -f $1/.gitsync ]] ; then
         syncs=($(cat $1/.gitsync))
         for((i=0; i<(${#syncs[@]}-1); i=i+2)); do
-            gitpull ${syncs[i]} ${syncs[i+1]}
+            gitpull ${syncs[i]} ${syncs[i+1]} &&
             gitpull ${syncs[i+1]} ${syncs[i]}
         done
     else

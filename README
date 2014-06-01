@@ -1,6 +1,30 @@
 gitsync is a Bash script for maintaining sets of git repositories on
 multiple devices.  An example use case would be keeping a work
-computer and home computer syncronized via an external hard drive, USB
+computer and home computer synchronized via an external hard drive, USB
 thumb drive, etc.
 
 gitsync is in the public domain, use it for whatever.
+
+**************************************************
+
+Rationale of use
+--------------------------------------------------
+
+Say you have a set of projects you work on regularly, but on different
+computers.  You then have various external storage devices that you
+use to keep the most up-to-date code for these projects.
+
+gitsync allows you to place a .gitsync file at the top of the device
+directory containing the paths to the individual code repositories on
+both the external storage and some other path (typically the code repo
+on the computer hdd).
+
+You then run gitsync <device-path> and the device is mounted (assuming
+you have your fstab configured) and all projects are synchronized.
+You can give gitsync more than one path if you have more than one
+device to synchronize.  Note that if you do have more than one
+external device and the devices are more than a single commit out of
+sync then you will have to run gitsync twice to have all changes
+propogate through all storage devices (may fix this in the future, the
+computer hdd repo is treated as the master copy so you have to make
+two passes to completely sync).

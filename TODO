@@ -1,0 +1,15 @@
++ Add branch support.  E.g., each line should be of the form
+
+  <repo1> <repo2> [branch]*
+
+  where a list of optional branches is supplied, white-space
+  separated.  If no branches are supplied then only "master" is
+  assumed.
+
+  E.g.:
+
+  /mnt/disk/repo /home/user/repo master testing
+
+  would denote the need to synchronize both the master and testing
+  branches of repositories located at /mnt/disk/repo on the removable
+  drive and /home/user/repo on the local drive.

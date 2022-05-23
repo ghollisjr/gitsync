@@ -72,6 +72,59 @@
   (format stream "No git branches for path ~s"
           (slot-value x 'path)))
 
+(define-condition git-no-repo (error)
+  ((paths :initarg :path :initform "")))
+
+(defmethod print-object ((x git-no-repo) stream)
+  (format stream "No git repos at any paths ~s"
+          (slot-value x 'paths)))
+
+(defun gitclone (path1 path2 &optional (branches (list "master")))
+  "Ensure that Git repos exist at both path1 and path2 via cloning if
+needed.  Does not check that they are actually clones of each other."
+  (let* ((olddir (getcwd))
+         (d1 (namestring (make-directory-pathname path1)))
+         (d2 (namestring (make-directory-pathname path2))))
+    ;; clone if necessary
+    (unless (and (probe-file (merge-pathnames ".git" d1))
+                 (probe-file (merge-pathnames ".git" d2)))
+      (let* ((p1 nil) ; source
+             (p2 nil)) ; dest
+        (when (probe-file (merge-pathnames ".git" d1))
+          (setf p1 d1)
+          (setf p2 d2))
+        (when (probe-file (merge-pathnames ".git" d2))
+          (setf p1 d2)
+          (setf p2 d1))
+        (when (not (or p1 p1))
+          (error 'git-no-repo :paths (list d1 d2)))
+        ;; cd into parentdir
+        (restart-case
+            (let* ((firstbranch NIL)
+                   (parentdir
+                     (make-pathname :directory
+                                    (butlast (pathname-directory p2)))))
+              (ensure-directories-exist parentdir)
+              (chdir parentdir)
+              (git "clone" p1)
+              (chdir p2)
+              (setf firstbranch (get-git-branch))
+              (setf branches (remove firstbranch branches :test #'equal))
+              (dolist (b branches)
+                (let* ((branch (get-git-branch)))
+                  (unless (equal b branch)
+                    (git "checkout"
+                         (concatenate 'string
+                                      "remotes/origin/"
+                                      b)
+                         "-b"
+                         b))))
+              (git "checkout" firstbranch)
+              (chdir olddir))
+          (abort ()
+            (chdir olddir)
+            (return-from gitclone)))))))
+
 (defun gitpull (path1 path2 &optional (branches (list "master")))
   (let* ((olddir (getcwd))
          (d1 (namestring (make-directory-pathname path1)))
@@ -133,6 +186,7 @@ be treated as Lisp strings."
                           line)))
                (t
                 (unless branches (setf branches (list "master")))
+                (gitclone repo1 repo2 branches)
                 (gitpull repo1 repo2 branches)
                 (gitpull repo2 repo1 branches)
                 (unless *quiet-p*

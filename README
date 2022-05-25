@@ -28,3 +28,55 @@ sync then you will have to run gitsync twice to have all changes
 propogate through all storage devices (may fix this in the future, the
 computer hdd repo is treated as the master copy so you have to make
 two passes to completely sync).
+
+If a repository in the .gitsync file exists at one of the two
+locations listed in the file but not another, the repository is cloned
+to the missing location and the required branches are checked out,
+creating missing directories as needed as well.  This makes it
+convenient to e.g. copy a whole set of git repositories to a new
+backup drive by simple copying the .gitsync file and possibly
+modifying the paths in the file if the mount location(s) changed.
+
+Example use case: Suppose you have user "user" with these repositories
+that need backing up to an external drive:
+
+/home/user/src/stuff
+/home/user/src/personal/morestuff
+
+You want these to be backed up to a device that will be mounted at
+
+/media/thumb
+
+in the following locations:
+
+/media/thumb/src/stuff
+/media/thumb/src/personal/morestuff
+
+You would then create a file /media/thumb/.gitsync with these
+contents:
+
+"/media/thumb/src/stuff" "/home/user/src/stuff"
+"/media/thumb/src/personal/morestuff" "/home/user/src/personal/morestuff"
+
+If you need to backup multiple branches, e.g.
+
+/home/user/src/stuff: master, testing
+
+then you could have the following .gitsync file:
+
+"/media/thumb/src/stuff" "/home/user/src/stuff" ("master" "testing")
+"/media/thumb/src/personal/morestuff" "/home/user/src/personal/morestuff"
+
+Since repositories are automatically cloned, the final step to setup
+the archive after mounting and creating the above .gitsync file would
+be to run gitsync.lisp as follows:
+
+gitsync.lisp /media/thumb
+
+and the repositories would be cloned to the listed locations under
+/media/thumb so long as write permissions are present.
+
+To synchronize the repositories later, run gitsync.lisp the same way
+after mounting:
+
+gitsync.lisp /media/thumb

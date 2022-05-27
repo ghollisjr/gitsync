@@ -220,4 +220,5 @@ be treated as Lisp strings."
            (abort condition)))
     (handler-bind ((git-no-branches #'custom-abort)
                    (run-error #'custom-abort))
-      (main))))
+      (main)
+      (sb-ext:quit :unix-status 0))))

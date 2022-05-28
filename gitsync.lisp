@@ -119,7 +119,8 @@ needed.  Does not check that they are actually clones of each other."
                                       b)
                          "-b"
                          b))))
-              (git "checkout" firstbranch)
+              (unless (equal (get-git-branch) firstbranch)
+                (git "checkout" firstbranch))
               (chdir olddir))
           (abort ()
             (chdir olddir)

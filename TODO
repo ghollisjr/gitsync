@@ -1,4 +1,12 @@
-+ Add branch support.  E.g., each line should be of the form
++ (BUG) If an existing repository lacks a branch, and the .gitsync
+  file is ed ited to include that missing branch, it causes branches
+  to be merged in horrible ways.  This should be checked.  Branches
+  that don't exist should either be skipped or (preferably) pulled
+  from a source in a smart way.
+
+- Add automated cloning
+
+- Add branch support.  E.g., each line should be of the form
 
   <repo1> <repo2> [branch]*
 

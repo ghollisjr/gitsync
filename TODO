@@ -1,3 +1,9 @@
++ (BUG) It seems that sudoku doesn't go back to its original
+  checked-out branch master after synching, which means it's likely
+  that the last listed branch in the .gitsync file is what's being
+  used as the branch to switch to or I've completely neglected to
+  switch back to the original branch somehow, not sure.
+
 + (BUG) If an existing repository lacks a branch, and the .gitsync
   file is ed ited to include that missing branch, it causes branches
   to be merged in horrible ways.  This should be checked.  Branches

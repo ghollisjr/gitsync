@@ -156,6 +156,8 @@ needed.  Does not check that they are actually clones of each other."
           (git "checkout" oldbranch)
           (chdir olddir)
           (return-from gitpull nil))))
+    (unless (equal oldbranch (get-git-branch))
+      (git "checkout" oldbranch))
     (chdir olddir)
     t))
 
